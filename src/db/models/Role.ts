@@ -1,4 +1,4 @@
-import { BOOLEAN, DataTypes, Model, Optional } from "sequelize"
+import { DataTypes, Model, Optional } from "sequelize"
 import connection from "../../config/dbConnect"
 
 interface RoleAttributes {

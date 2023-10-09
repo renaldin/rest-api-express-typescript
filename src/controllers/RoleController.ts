@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import Role from "../db/models/Role"
+import ResponseDataHelper from "../helpers/ResponseDataHelper"
 
 const GetRole = async (req: Request, res: Response):Promise<Response> => {
   try {
@@ -9,25 +10,9 @@ const GetRole = async (req: Request, res: Response):Promise<Response> => {
       }
     })
 
-    return res.status(200).send({
-      status: 200,
-      message: "Ok",
-      data: result
-    })
-  } catch (error:any) {
-    if(error != null && error instanceof Error) {
-      return res.status(500).send({
-        status: 500,
-        message: error.message,
-        errors: error
-      })
-    }
-
-    return res.status(500).send({
-      status: 500,
-      message: "Internal server error",
-      errors: error
-    })
+    return res.status(200).send(ResponseDataHelper.ResponseData(200, "Data found", null, result))
+  } catch (error: any) {
+    return res.status(500).send(ResponseDataHelper.ResponseData(500, "", error, null))
   }
 }
 
@@ -40,25 +25,9 @@ const CreateRole = async (req: Request, res: Response):Promise<Response> => {
       active
     })
 
-    return res.status(201).send({
-      status: 201,
-      message: "Create an succesfully!",
-      data: result
-    })
+    return res.status(201).send(ResponseDataHelper.ResponseData(201, "Created an successfully!", null, result))
   } catch (error:any) {
-    if(error != null && error instanceof Error) {
-      return res.status(500).send({
-        status: 500,
-        message: error.message,
-        errors: error
-      })
-    }
-
-    return res.status(500).send({
-      status: 500,
-      message: "Internal server error",
-      errors: error
-    })
+    return res.status(500).send(ResponseDataHelper.ResponseData(500, "", error, null))
   }
 }
 
@@ -70,11 +39,7 @@ const UpdateRole = async (req: Request, res: Response):Promise<Response> => {
     const result = await Role.findByPk(id)
 
     if(!result) {
-      return res.status(404).send({
-        status: 404,
-        message: "Data not found",
-        data: null
-      })
+      return res.status(404).send(ResponseDataHelper.ResponseData(404, "Data not found", null, null))
     }
 
     result.roleName = roleName
@@ -82,25 +47,9 @@ const UpdateRole = async (req: Request, res: Response):Promise<Response> => {
 
     await result.save()
 
-    return res.status(200).send({
-      status: 200,
-      message: "Update an successfully!",
-      data: result
-    })
+    return res.status(200).send(ResponseDataHelper.ResponseData(200, "Updated an succesfully!", null, result))
   } catch (error:any) {
-    if(error != null && error instanceof Error) {
-      return res.status(500).send({
-        status: 500,
-        message: error.message,
-        errors: error
-      })
-    }
-
-    return res.status(500).send({
-      status: 500,
-      message: "Internal server error",
-      errors: error
-    })
+    return res.status(500).send(ResponseDataHelper.ResponseData(500, "", error, null))
   }
 }
 
@@ -111,34 +60,14 @@ const DeleteRole = async (req: Request, res: Response):Promise<Response> => {
     const result = await Role.findByPk(id)
 
     if(!result) {
-      return res.status(404).send({
-        status: 404,
-        message: "Data not found",
-        data: null
-      })
+      return res.status(404).send(ResponseDataHelper.ResponseData(404, "Data not found", null, null))
     }
 
     await result.destroy()
 
-    return res.status(200).send({
-      status: 200,
-      message: "Delete an successfully!",
-      data: null
-    })
+    return res.status(200).send(ResponseDataHelper.ResponseData(200, "Deleted an successfully!", null, null))
   } catch (error:any) {
-    if(error != null && error instanceof Error) {
-      return res.status(500).send({
-        status: 500,
-        message: error.message,
-        errors: error
-      })
-    }
-
-    return res.status(500).send({
-      status: 500,
-      message: "Internal server error",
-      errors: error
-    })
+    return res.status(500).send(ResponseDataHelper.ResponseData(500, "", error, null))
   }
 }
 
@@ -149,32 +78,12 @@ const GetRoleById = async (req: Request, res: Response):Promise<Response> => {
     const result = await Role.findByPk(id)
 
     if(!result) {
-      return res.status(404).send({
-        status: 404,
-        message: "Data not found",
-        data: null
-      })
+      return res.status(404).send(ResponseDataHelper.ResponseData(404, "Data not found", null, null))
     }
 
-    return res.status(200).send({
-      status: 200,
-      message: "Data is found",
-      data: result
-    })
+    return res.status(200).send(ResponseDataHelper.ResponseData(200, "Data found", null, result))
   } catch (error:any) {
-    if(error != null && error instanceof Error) {
-      return res.status(500).send({
-        status: 500,
-        message: error.message,
-        errors: error
-      })
-    }
-
-    return res.status(500).send({
-      status: 500,
-      message: "Internal server error",
-      errors: error
-    })
+    return res.status(500).send(ResponseDataHelper.ResponseData(500, "", error, null))
   }
 }
 
