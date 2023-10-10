@@ -7,7 +7,7 @@ interface RoleAttributes {
   email?: string | null,
   roleId?: number | null,
   password?: string | null,
-  acccessToken?: string | null,
+  accessToken?: string | null,
   verified?: boolean | null,
   active?: boolean | null,
 
@@ -24,7 +24,7 @@ class User extends Model<RoleAttributes, RoleInput> implements RoleAttributes {
   public email!: string | null
   public roleId!: number | null
   public password!: string | null
-  public acccessToken!: string | null
+  public accessToken!: string | null
   public verified!: boolean | null
   public active!: boolean | null
 
@@ -55,7 +55,7 @@ User.init({
     allowNull: true,
     type: DataTypes.TEXT
   },
-  acccessToken: {
+  accessToken: {
     allowNull: true,
     type: DataTypes.TEXT
   },

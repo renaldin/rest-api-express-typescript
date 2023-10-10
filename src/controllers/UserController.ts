@@ -18,9 +18,9 @@ const Register = async (req: Request, res: Response):Promise<Response> => {
       verified: true
     })
 
-    return res.status(201).send(ResponseDataHelper.ResponseData(201, "Created an successfully", null, result))
+    return res.status(201).send(ResponseDataHelper.ok(201, "Created an successfully", result))
   } catch (error:any) {
-    return res.status(500).send(ResponseDataHelper.ResponseData(500, "", error, null))    
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))    
   }
 }
 
