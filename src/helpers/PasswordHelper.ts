@@ -5,7 +5,7 @@ const PasswordHashing = async (password: string):Promise<string> => {
   return result
 }
 
-const PasswordCompare = async (password: string, passwordHash: string):Promise<boolean> => {
+const PasswordCompare = async (password: string, passwordHash: any):Promise<boolean> => {
   const matched = await bcrypt.compare(password, passwordHash)
   return matched
 }
