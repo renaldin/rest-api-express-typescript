@@ -79,4 +79,41 @@ const Login = async (req: Request, res: Response):Promise<Response> => {
  }
 }
 
-export default { Register, Login }
+const RefreshToken = async (req: Request, res: Response):Promise<Response> => {
+  try {
+    const refreshToken = req.cookies?.refreshToken
+
+    if (!refreshToken) {
+      return res.status(401).send(ResponseDataHelper.notFound(401, "Unauthorized!"))
+    }
+    
+    const decodedUser = TokenHelper.extractRefresh(refreshToken)
+    
+    if (!decodedUser) {
+      return res.status(401).send(ResponseDataHelper.notFound(401, "Unauthorized!"))
+    }
+
+    const token = TokenHelper.generate({
+      name: decodedUser.name,
+      email: decodedUser.email,
+      roleId: decodedUser.roleId,
+      verified: decodedUser.verified,
+      active: decodedUser.active
+    })
+
+    const resultUser = {
+      name: decodedUser.name,
+      email: decodedUser.email,
+      roleId: decodedUser.roleId,
+      verified: decodedUser.verified,
+      active: decodedUser.active,
+      token: token
+    }
+
+    return res.status(200).send(ResponseDataHelper.ok(200, "Ok", resultUser))
+  } catch(error: any) {
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
+  }
+}
+
+export default { Register, Login, RefreshToken }

@@ -12,7 +12,7 @@ interface UserData {
 }
 
 const generate = (data: any): string => {
-  const token = jwt.sign(data, process.env.JWT_TOKEN as string, { expiresIn: '10m' })
+  const token = jwt.sign(data, process.env.JWT_TOKEN as string, { expiresIn: '20s' })
 
   return token
 }
@@ -24,7 +24,7 @@ const refresh = (data: any): string => {
 }
 
 const extract = (token: string): UserData | null => {
-  const secretKey:string = process.env.JWT_TOKEN as string
+  const secretKey: string = process.env.JWT_TOKEN as string
 
   let resData: any
 
@@ -45,7 +45,7 @@ const extract = (token: string): UserData | null => {
 }
 
 const extractRefresh = (token: string): UserData | null => {
-  const secretKey:string = process.env.JWT_REFRESH_TOKEN as string
+  const secretKey: string = process.env.JWT_REFRESH_TOKEN as string
 
   let resData: any
 
