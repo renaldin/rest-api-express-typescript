@@ -19,5 +19,7 @@ router.delete("/role/:id", RoleController.DeleteRole)
 router.post("/user/register", UserValidation.RegisterValidation, UserController.Register)
 router.post("/user/login", UserController.Login)
 router.get("/user/refresh-token", UserController.RefreshToken)
+router.get("/user/current-user", Authorization.Authenticated, UserController.CurrentUser)
+router.get("/user/logout", Authorization.Authenticated, UserController.Logout)
 
 export default router

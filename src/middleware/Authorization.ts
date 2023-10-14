@@ -16,6 +16,8 @@ const Authenticated = (req: Request, res: Response, next: NextFunction) => {
     if (!result) {
       return res.status(401).send(ResponseDataHelper.notFound(401, "Unauthorized"))
     }
+
+    res.locals.userEmail = result?.email
     
     next()
   } catch (error: any) {

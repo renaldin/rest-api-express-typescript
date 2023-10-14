@@ -3,6 +3,7 @@ import User from "../db/models/User"
 import ResponseDataHelper from "../helpers/ResponseDataHelper"
 import PasswordHelper from "../helpers/PasswordHelper"
 import TokenHelper from "../helpers/TokenHelper"
+import Role from "../db/models/Role"
 
 const Register = async (req: Request, res: Response):Promise<Response> => {
   try {
@@ -82,13 +83,13 @@ const Login = async (req: Request, res: Response):Promise<Response> => {
 const RefreshToken = async (req: Request, res: Response):Promise<Response> => {
   try {
     const refreshToken = req.cookies?.refreshToken
-
+    
     if (!refreshToken) {
       return res.status(401).send(ResponseDataHelper.notFound(401, "Unauthorized!"))
     }
     
     const decodedUser = TokenHelper.extractRefresh(refreshToken)
-    
+
     if (!decodedUser) {
       return res.status(401).send(ResponseDataHelper.notFound(401, "Unauthorized!"))
     }
@@ -110,10 +111,63 @@ const RefreshToken = async (req: Request, res: Response):Promise<Response> => {
       token: token
     }
 
-    return res.status(200).send(ResponseDataHelper.ok(200, "Ok", resultUser))
+    return res.status(200).send(ResponseDataHelper.ok(200, "Refresh token successfully!", resultUser))
   } catch(error: any) {
     return res.status(500).send(ResponseDataHelper.badRequest(500, error))
   }
 }
 
-export default { Register, Login, RefreshToken }
+const CurrentUser = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const email = res.locals.userEmail
+
+    const result = await User.findOne({
+      where: {
+        email: email
+      },
+      attributes: ['name', 'email', 'roleId', 'verified', 'active', 'createdAt'],
+      include: {
+        model: Role,
+        attributes: ['id', 'roleName']
+      }
+    })
+
+    if (!result) {
+      return res.status(404).send(ResponseDataHelper.notFound(404, "Data not found"))
+    }
+
+    return res.status(200).send(ResponseDataHelper.ok(200, "Data Found", result))
+  } catch(error: any) {
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
+  }
+}
+
+const Logout = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const refreshToken = req.cookies?.refreshToken
+    
+    if (!refreshToken) {
+      return res.status(200).send(ResponseDataHelper.ok(200, "Logout successfully!", null))
+    }
+
+    const email = res.locals.userEmail
+    const user = await User.findOne({
+      where: {
+        email: email
+      }
+    })
+    
+    if (!user) {
+      res.clearCookie("refreshToken")
+      return res.status(200).send(ResponseDataHelper.ok(200, "Logout successfully!", null))
+    }
+
+    await user.update({ accessToken: null }, { where: { email: email } })
+    res.clearCookie("refreshToken")
+    return res.status(200).send(ResponseDataHelper.ok(200, "Logout successfully!", null))
+  } catch(error: any) {
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
+  }
+}
+
+export default { Register, Login, RefreshToken, CurrentUser, Logout }
