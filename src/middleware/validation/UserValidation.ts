@@ -5,11 +5,12 @@ import User from "../../db/models/User"
 
 const RegisterValidation = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, email, password, confirmPassword } = req.body
+    const { name, email, password, roleId, confirmPassword } = req.body
 
     const data = {
       name,
       email,
+      roleId,
       password,
       confirmPassword
     }
@@ -17,6 +18,7 @@ const RegisterValidation = async (req: Request, res: Response, next: NextFunctio
     const rules: Validator.Rules = {
       "name": "required|string|max:50",
       "email": "required|email",
+      "roleId": "required",
       "password": "required|min:8",
       "confirmPassword": "required|same:password"
     }
@@ -24,7 +26,7 @@ const RegisterValidation = async (req: Request, res: Response, next: NextFunctio
     const validate = new Validator(data, rules)
 
     if (validate.fails()) {
-      return res.status(400).send(ResponseDataHelper.validateError(400, "Validation Error" ,validate.errors))
+      return res.status(400).send(ResponseDataHelper.validateError(400, "Validation Error", validate.errors))
     }
 
     const user = await User.findOne({

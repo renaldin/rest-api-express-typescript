@@ -18,6 +18,7 @@ const Authenticated = (req: Request, res: Response, next: NextFunction) => {
     }
 
     res.locals.userEmail = result?.email
+    res.locals.roleId = result?.roleId
     
     next()
   } catch (error: any) {
@@ -25,4 +26,43 @@ const Authenticated = (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-export default { Authenticated }
+const SuperAdmin = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const roleId = res.locals.roleId
+    if (roleId !== 1) {
+      return res.status(403).send(ResponseDataHelper.notFound(403, "Forbidden"))
+    }
+
+    next()
+  } catch(error: any) {
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
+  }
+}
+
+const Admin = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const roleId = res.locals.roleId
+    if (roleId !== 2) {
+      return res.status(403).send(ResponseDataHelper.notFound(403, 'Forbidden'))
+    }
+
+    next()
+  } catch(error: any) {
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
+  }
+}
+
+const User = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const roleId = res.locals.roleId
+    if (roleId !== 3) {
+      return res.status(403).send(ResponseDataHelper.notFound(403, 'Forbidden'))
+    }
+
+    next()
+  } catch(error: any) {
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
+  }
+}
+
+export default { Authenticated, SuperAdmin, Admin, User }

@@ -7,14 +7,14 @@ import Role from "../db/models/Role"
 
 const Register = async (req: Request, res: Response):Promise<Response> => {
   try {
-    const { name, email, password, confirmPassword } = req.body
+    const { name, email, password, roleId, confirmPassword } = req.body
 
     const hashed = await PasswordHelper.PasswordHashing(password)
 
     const result = await User.create({
       name,
       email,
-      roleId: 1,
+      roleId: roleId,
       password: hashed,
       active: true,
       verified: true

@@ -10,10 +10,10 @@ const router = express.Router()
 
 // role routing
 router.get("/role", Authorization.Authenticated, RoleController.GetRole)
-router.get("/role/:id", RoleController.GetRoleById)
-router.post("/role", RoleController.CreateRole)
-router.put("/role/:id", RoleController.UpdateRole)
-router.delete("/role/:id", RoleController.DeleteRole)
+router.get("/role/:id", Authorization.Authenticated, RoleController.GetRoleById)
+router.post("/role", Authorization.Authenticated, Authorization.Admin, RoleController.CreateRole)
+router.put("/role/:id", Authorization.Authenticated, Authorization.Admin, RoleController.UpdateRole)
+router.delete("/role/:id", Authorization.Authenticated, Authorization.SuperAdmin, RoleController.DeleteRole)
 
 // user Routing
 router.post("/user/register", UserValidation.RegisterValidation, UserController.Register)
