@@ -4,6 +4,10 @@ import ResponseDataHelper from "../helpers/ResponseDataHelper"
 import PasswordHelper from "../helpers/PasswordHelper"
 import TokenHelper from "../helpers/TokenHelper"
 import Role from "../db/models/Role"
+import RoleMenuAccess from "../db/models/RoleMenuAccess"
+import MasterMenu from "../db/models/MasterMenu"
+import Submenu from "../db/models/Submenu"
+import { Op } from "sequelize"
 
 const Register = async (req: Request, res: Response):Promise<Response> => {
   try {
@@ -65,13 +69,41 @@ const Login = async (req: Request, res: Response):Promise<Response> => {
     maxAge: 24 * 60 * 60 * 1000
   })
 
+  const roleAccess = await RoleMenuAccess.findAll({
+    where: {
+      roleId: user.roleId,
+      active: true
+    }
+  })
+
+  const listSubmenuId = roleAccess.map((item) => {
+    return item.submenuId
+  })
+
+  const menuAccess = await MasterMenu.findAll({
+    where: {
+      active: true
+    },
+    order: [
+      ['ordering', 'ASC'],
+      [Submenu, 'ordering', 'ASC']
+    ],
+    include: {
+      model: Submenu,
+      where: {
+        id: { [Op.in]: listSubmenuId }
+      }
+    }
+  })
+
   const userResponse = {
     name: user.name,
     email: user.email,
     roleId: user.roleId,
     verified: user.verified,
     active: user.active,
-    token: token
+    token: token,
+    menuAccess: menuAccess
   }
 
   return res.status(200).send(ResponseDataHelper.ok(200, "Login successfully", userResponse))

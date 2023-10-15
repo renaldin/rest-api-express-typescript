@@ -81,6 +81,4 @@ Submenu.init({
   tableName: 'submenus'
 })
 
-Submenu.belongsTo(MasterMenu, {foreignKey: 'masterMenuId'})
-
 export default Submenu
