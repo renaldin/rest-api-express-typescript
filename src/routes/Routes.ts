@@ -7,6 +7,8 @@ import UserValidation from "../middleware/validation/UserValidation"
 import Authorization from "../middleware/Authorization"
 import MasterMenuController from "../controllers/MasterMenuController"
 import MenuValidation from "../middleware/validation/MenuValidation"
+import SubMenuController from "../controllers/SubMenuController"
+import SubMenuValidation from "../middleware/validation/SubMenuValidation"
 
 const router = express.Router()
 
@@ -30,9 +32,17 @@ router.get('/menu/all', Authorization.Authenticated, Authorization.SuperAdmin, M
 router.get('/menu/:id', Authorization.Authenticated, Authorization.Admin, MasterMenuController.GetById)
 router.post('/menu', MenuValidation.Create, Authorization.Authenticated, Authorization.Admin, MasterMenuController.Create)
 router.put('/menu/:id', MenuValidation.Create, Authorization.Authenticated, Authorization.Admin, MasterMenuController.Update)
-router.delete('/menu/:id/soft', Authorization.Authenticated, Authorization.Admin, MasterMenuController.SoftDeleteMenu)
-router.delete('/menu/:id/permanent', Authorization.Authenticated, Authorization.SuperAdmin, MasterMenuController.DeletePermanent)
+router.delete('/menu/delete/:id/soft', Authorization.Authenticated, Authorization.Admin, MasterMenuController.SoftDeleteMenu)
+router.delete('/menu/delete/:id/permanent', Authorization.Authenticated, Authorization.SuperAdmin, MasterMenuController.DeletePermanent)
 
+// sub menu routing
+router.get('/sub-menu', Authorization.Authenticated, Authorization.Admin, SubMenuController.GetActiveSubMenu)
+router.get('/sub-menu/all', Authorization.Authenticated, Authorization.SuperAdmin, SubMenuController.Index)
+router.get('/sub-menu/:id', Authorization.Authenticated, Authorization.Admin, SubMenuController.GetById)
+router.post('/sub-menu', SubMenuValidation.Create, Authorization.Authenticated, Authorization.Admin, SubMenuController.Create)
+router.put('/sub-menu/:id', SubMenuValidation.Create, Authorization.Authenticated, Authorization.Admin, SubMenuController.Update)
+router.delete('/sub-menu/delete/:id/soft', Authorization.Authenticated, Authorization.Admin, SubMenuController.DeleteSoft)
+router.delete('/sub-menu/delete/:id/permanent', Authorization.Authenticated, Authorization.SuperAdmin, SubMenuController.DeletePermanent)
 
 
 export default router

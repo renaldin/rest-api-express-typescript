@@ -12,7 +12,7 @@ interface UserData {
 }
 
 const generate = (data: any): string => {
-  const token = jwt.sign(data, process.env.JWT_TOKEN as string, { expiresIn: '15m' })
+  const token = jwt.sign(data, process.env.JWT_TOKEN as string, { expiresIn: '1h' })
 
   return token
 }

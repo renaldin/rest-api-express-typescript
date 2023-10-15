@@ -13,7 +13,7 @@ const Create = (req: Request, res: Response, next: NextFunction) => {
     const rules: Validator.Rules = {
       'name': 'required|string|max:50',
       'icon': 'required|string',
-      'ordering': 'required|number'
+      'ordering': 'required|numeric'
     }
 
     const validate = new Validator(data, rules)

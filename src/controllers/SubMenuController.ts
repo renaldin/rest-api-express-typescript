@@ -1,12 +1,26 @@
 import { Request, Response } from "express"
-import MasterMenu from "../db/models/MasterMenu"
+import Submenu from "../db/models/Submenu"
 import ResponseDataHelper from "../helpers/ResponseDataHelper"
 
 const Index = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const result = await MasterMenu.findAll()
+    const result = await Submenu.findAll()
 
-    return res.status(200).send(ResponseDataHelper.ok(200, "Data found", result))
+    return res.status(200).send(ResponseDataHelper.ok(200, 'Data found', result))
+  } catch(error: any) {
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
+  }
+}
+
+const GetActiveSubMenu = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const result = await Submenu.findAll({
+      where: {
+        active: true
+      }
+    })
+
+    return res.status(200).send(ResponseDataHelper.ok(200, 'Data found', result))
   } catch(error: any) {
     return res.status(500).send(ResponseDataHelper.badRequest(500, error))
   }
@@ -16,10 +30,9 @@ const GetById = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { id } = req.params
 
-    const result = await MasterMenu.findOne({
+    const result = await Submenu.findOne({
       where: {
-        id: id,
-        active: true
+        id: id
       }
     })
 
@@ -35,12 +48,16 @@ const GetById = async (req: Request, res: Response): Promise<Response> => {
 
 const Create = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { name, icon, ordering } = req.body
+    const { name, masterMenuId, url, title, icon, ordering, isTargetSelf } = req.body
 
-    const result = await MasterMenu.create({
+    const result = await Submenu.create({
       name,
+      masterMenuId,
+      url,
+      title,
       icon,
       ordering,
+      isTargetSelf,
       active: true
     })
 
@@ -53,9 +70,38 @@ const Create = async (req: Request, res: Response): Promise<Response> => {
 const Update = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { id } = req.params
-    const { name, icon, ordering } = req.body
+    const { name, masterMenuId, url, title, icon, ordering, isTargetSelf } = req.body
 
-    const result = await MasterMenu.findOne({
+    const result = await Submenu.findOne({
+      where: {
+        id: id
+      }
+    })
+
+    if (!result) {
+      return res.status(404).send(ResponseDataHelper.notFound(404, 'Data not found'))
+    }
+
+    result.name = name
+    result.masterMenuId = masterMenuId
+    result.url = url
+    result.title = title,
+    result.icon = icon
+    result.ordering = ordering,
+    result.isTargetSelf = isTargetSelf
+    await result.save()
+
+    return res.status(200).send(ResponseDataHelper.ok(200, 'Data found', result))
+  } catch(error: any) {
+    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
+  }
+}
+
+const DeleteSoft = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { id } = req.params
+
+    const result = await Submenu.findOne({
       where: {
         id: id,
         active: true
@@ -66,35 +112,10 @@ const Update = async (req: Request, res: Response): Promise<Response> => {
       return res.status(404).send(ResponseDataHelper.notFound(404, 'Data not found'))
     }
 
-    result.name = name
-    result.icon = icon
-    result.ordering = ordering
-    await result.save()
-
-    return res.status(200).send(ResponseDataHelper.ok(200, 'Data found', result))
-  } catch(error: any) {
-    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
-  }
-}
-
-const SoftDeleteMenu = async (req: Request, res: Response): Promise<Response> => {
-  try {
-    const { id } = req.params
-
-    const result = await MasterMenu.findOne({
-      where: {
-        id: id
-      }
-    })
-
-    if (!result) {
-      return res.status(404).send(ResponseDataHelper.notFound(404, 'Data not found'))
-    }
-
     result.active = false
     await result.save()
 
-    return res.status(200).send(ResponseDataHelper.ok(200, 'Deleted menu soft successfuly', null))
+    return res.status(200).send(ResponseDataHelper.ok(200, 'Deleted soft successfully!', null))
   } catch(error: any) {
     return res.status(500).send(ResponseDataHelper.badRequest(500, error))
   }
@@ -104,7 +125,7 @@ const DeletePermanent = async (req: Request, res: Response): Promise<Response> =
   try {
     const { id } = req.params
 
-    const result = await MasterMenu.findOne({
+    const result = await Submenu.findOne({
       where: {
         id: id
       }
@@ -115,25 +136,11 @@ const DeletePermanent = async (req: Request, res: Response): Promise<Response> =
     }
 
     await result.destroy()
-    
-    return res.status(200).send(ResponseDataHelper.ok(200, 'Deleted successfully!', null))
+
+    return res.status(200).send(ResponseDataHelper.ok(404, 'Deleted permanent successfully!', null))
   } catch(error: any) {
     return res.status(500).send(ResponseDataHelper.badRequest(500, error))
   }
 }
 
-const GetActiveMenu = async (req: Request, res: Response): Promise<Response> => {
-  try {
-    const result = await MasterMenu.findAll({
-      where: {
-        active: true
-      }
-    })
-
-    return res.status(200).send(ResponseDataHelper.ok(200, "Data found", result))
-  } catch(error: any) {
-    return res.status(500).send(ResponseDataHelper.badRequest(500, error))
-  }
-}
-
-export default { Index, GetById, Create, Update, SoftDeleteMenu, DeletePermanent, GetActiveMenu }
+export default { Index, GetActiveSubMenu, GetById, Create, Update, DeleteSoft, DeletePermanent }
