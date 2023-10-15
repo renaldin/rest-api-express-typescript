@@ -9,6 +9,8 @@ import MasterMenuController from "../controllers/MasterMenuController"
 import MenuValidation from "../middleware/validation/MenuValidation"
 import SubMenuController from "../controllers/SubMenuController"
 import SubMenuValidation from "../middleware/validation/SubMenuValidation"
+import RoleMenuAccessController from "../controllers/RoleMenuAccessController"
+import RoleMenuAccessValidation from "../middleware/validation/RoleMenuAccessValidation"
 
 const router = express.Router()
 
@@ -44,5 +46,13 @@ router.put('/sub-menu/:id', SubMenuValidation.Create, Authorization.Authenticate
 router.delete('/sub-menu/delete/:id/soft', Authorization.Authenticated, Authorization.Admin, SubMenuController.DeleteSoft)
 router.delete('/sub-menu/delete/:id/permanent', Authorization.Authenticated, Authorization.SuperAdmin, SubMenuController.DeletePermanent)
 
+// role menu access routing
+router.get('/role-menu-access', Authorization.Authenticated, Authorization.SuperAdmin, RoleMenuAccessController.GetActiveRoleMenuAccess)
+router.get('/role-menu-access/all', Authorization.Authenticated, Authorization.SuperAdmin, RoleMenuAccessController.Index)
+router.get('/role-menu-access/:id', Authorization.Authenticated, Authorization.SuperAdmin, RoleMenuAccessController.GetById)
+router.post('/role-menu-access', RoleMenuAccessValidation.Create, Authorization.Authenticated, Authorization.SuperAdmin, RoleMenuAccessController.Create)
+router.put('/role-menu-access/:id', RoleMenuAccessValidation.Create, Authorization.Authenticated, Authorization.SuperAdmin, RoleMenuAccessController.Update)
+router.delete('/role-menu-access/delete/:id/soft', Authorization.Authenticated, Authorization.SuperAdmin, RoleMenuAccessController.DeleteSoft)
+router.delete('/role-menu-access/delete/:id/permanent', Authorization.Authenticated, Authorization.SuperAdmin, RoleMenuAccessController.DeletePermanent)
 
 export default router
